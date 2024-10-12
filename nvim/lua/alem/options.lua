@@ -42,3 +42,6 @@ vim.opt.backupdir:remove('.') -- keep backups out of the current directory
 vim.opt.shortmess:append({ I = true }) -- disable the splash screen
 
 vim.opt.wildmode = 'longest:full,full' -- complete the longest common match, and allow tabbing the results to fully complete them
+
+-- views can only be fully collapsed with the global statusline, see https://github.com/yetone/avante.nvim
+vim.opt.laststatus = 3
