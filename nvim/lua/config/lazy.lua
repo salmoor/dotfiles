@@ -50,8 +50,18 @@ require("lazy").setup({
     "nelstrom/vim-visual-star-search",
     {'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons'},
     "lewis6991/gitsigns.nvim",
+    {
+      'Exafunction/codeium.vim',
+      event = 'BufEnter'
+    },
     -- import your plugins
     { import = "alem.plugins" },
+    {
+      "williamboman/mason.nvim",
+      opts = {
+        ensure_installed = { "typescript-language-server" }
+      }
+    }
   },
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.

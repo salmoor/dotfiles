@@ -154,6 +154,11 @@ lspconfig.phpactor.setup{
   cmd = { "phpactor", "language-server", "-vvv" },
 }
 
+lspconfig.ts_ls.setup{
+  on_attach = on_attach,
+  capabilities = capabilities,
+}
+
 require('lualine').setup()
 require("bufferline").setup{}
 require("ibl").setup()
