@@ -50,10 +50,6 @@ require("lazy").setup({
     "nelstrom/vim-visual-star-search",
     {'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons'},
     "lewis6991/gitsigns.nvim",
-    {
-      'Exafunction/codeium.vim',
-      event = 'BufEnter'
-    },
     -- import your plugins
     { import = "alem.plugins" },
     {

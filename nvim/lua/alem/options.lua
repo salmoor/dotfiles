@@ -43,5 +43,5 @@ vim.opt.shortmess:append({ I = true }) -- disable the splash screen
 
 vim.opt.wildmode = 'longest:full,full' -- complete the longest common match, and allow tabbing the results to fully complete them
 
--- views can only be fully collapsed with the global statusline, see https://github.com/yetone/avante.nvim
+-- views can only be fully collapsed with the global statusline
 vim.opt.laststatus = 3
