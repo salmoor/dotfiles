@@ -27,3 +27,6 @@ vim.keymap.set('i', ',,', '<Esc>A,<Esc>')
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', '<leader>x', ':!open %<CR><CR>')
+
+-- Rename
+vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, {})
