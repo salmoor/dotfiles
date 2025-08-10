@@ -16,14 +16,22 @@ for _, mode in ipairs({'n', 'i', 'v'}) do
   end
 end
 
+-- Keympaps
+vim.keymap.set('n', '<leader>cp', ':let @+ = expand("%:p")<CR>', { desc = 'Copy full path' })
+vim.keymap.set('n', '<leader>cf', ':let @+ = expand("%:t")<CR>', { desc = 'Copy filename' })
+vim.keymap.set('n', '<Space>', '<Nop>')
+vim.keymap.set('v', '<Space>', '<Nop>')
+
 -- set colorscheme
 -- vim.cmd[[colorscheme tokyonight-night]]
 -- vim.cmd[[colorscheme tokyonight-storm]]
 -- vim.cmd[[colorscheme tokyonight-day]]
 -- vim.cmd[[colorscheme tokyonight-moon]]
-vim.cmd[[colorscheme kanagawa-wave]]
+-- vim.cmd[[colorscheme kanagawa-wave]]
 -- vim.cmd[[colorscheme kanagawa-dragon]]
 -- vim.cmd[[colorscheme kanagawa-lotus]]
+vim.cmd[[colorscheme github_dark]]
+
 
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
@@ -65,6 +73,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<space>f', function()
       vim.lsp.buf.format { async = true }
     end, opts)
+    vim.keymap.set('n', '<leader>oi', function()
+      vim.lsp.buf.execute_command({
+        command = "_typescript.organizeImports",
+        arguments = {vim.api.nvim_buf_get_name(0)}
+      })
+    end, { desc = 'Organize imports' })
   end,
 })
 
