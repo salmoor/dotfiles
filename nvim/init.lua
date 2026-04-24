@@ -21,16 +21,17 @@ vim.keymap.set('n', '<leader>cp', ':let @+ = expand("%:p")<CR>', { desc = 'Copy 
 vim.keymap.set('n', '<leader>cf', ':let @+ = expand("%:t")<CR>', { desc = 'Copy filename' })
 vim.keymap.set('n', '<Space>', '<Nop>')
 vim.keymap.set('v', '<Space>', '<Nop>')
+vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 
 -- set colorscheme
 -- vim.cmd[[colorscheme tokyonight-night]]
 -- vim.cmd[[colorscheme tokyonight-storm]]
 -- vim.cmd[[colorscheme tokyonight-day]]
 -- vim.cmd[[colorscheme tokyonight-moon]]
--- vim.cmd[[colorscheme kanagawa-wave]]
+vim.cmd[[colorscheme kanagawa-wave]]
 -- vim.cmd[[colorscheme kanagawa-dragon]]
 -- vim.cmd[[colorscheme kanagawa-lotus]]
-vim.cmd[[colorscheme github_dark]]
+-- vim.cmd[[colorscheme github_dark]]
 
 
 local builtin = require('telescope.builtin')
@@ -144,11 +145,16 @@ cmp.setup.cmdline(':', {
     })
 })
 
--- Set up lspconfig.
+-- Set up LSP servers using vim.lsp.config (nvim 0.11+)
+require("mason").setup()
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-local lspconfig = require('lspconfig')
-lspconfig.phpactor.setup{
-  on_attach = on_attach,
+
+-- Configure phpactor
+vim.lsp.config.phpactor = {
+  cmd = { "phpactor", "language-server", "-vvv" },
+  filetypes = { "php" },
+  root_markers = { "composer.json", ".git" },
+  capabilities = capabilities,
   init_options = {
     ["language_server_phpstan.enabled"] = false,
     ["language_server_psalm.enabled"] = false,
@@ -158,20 +164,24 @@ lspconfig.phpactor.setup{
       files = {
         exclude = {
           "**/node_modules/**",
-          -- Add any other patterns you want to exclude
           "**/applications/backend/vendor/squizlabs",
         }
       }
     }
   },
-  capabilities = capabilities,
-  cmd = { "phpactor", "language-server", "-vvv" },
 }
 
-lspconfig.ts_ls.setup{
-  on_attach = on_attach,
+-- Configure ts_ls (TypeScript)
+vim.lsp.config.ts_ls = {
+  cmd = { "typescript-language-server", "--stdio" },
+  filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+  root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
   capabilities = capabilities,
 }
+
+-- Enable the LSP servers
+vim.lsp.enable('phpactor')
+vim.lsp.enable('ts_ls')
 
 require('lualine').setup()
 require("bufferline").setup{}

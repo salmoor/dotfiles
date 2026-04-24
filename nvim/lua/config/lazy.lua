@@ -27,6 +27,7 @@ require("lazy").setup({
     "nvim-lua/plenary.nvim",
     "nvim-tree/nvim-web-devicons",
     "neovim/nvim-lspconfig",
+    "williamboman/mason-lspconfig.nvim",
     { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
     "tpope/vim-surround",
     "tpope/vim-eunuch",

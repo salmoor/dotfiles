@@ -30,3 +30,7 @@ vim.keymap.set('n', '<leader>x', ':!open %<CR><CR>')
 
 -- Rename
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, {})
+
+-- Lazy update
+vim.keymap.set('n', '<leader>lu', '<cmd>Lazy update<cr>', { desc = 'Lazy update' })
+vim.api.nvim_create_user_command('Lu', 'Lazy update', { desc = 'Lazy update' })
