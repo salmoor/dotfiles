@@ -14,6 +14,10 @@ ln -sf $DOTFILES/tmux/tmux.conf $HOME/.tmux.conf
 rm -rf $HOME/.config/nvim
 ln -s $DOTFILES/nvim $HOME/.config/nvim
 
+# Zsh
+rm -f $HOME/.zshrc
+ln -s $DOTFILES/zsh/zshrc $HOME/.zshrc
+
 # Scripts
 mkdir -p $HOME/.local/bin
 ln -sf $DOTFILES/local/bin/t $HOME/.local/bin/t
