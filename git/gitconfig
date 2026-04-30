@@ -1,0 +1,22 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Alemdar Salmoor
+	email = alemdarsalmoor@gmail.com
+
+[alias]
+  cm = commit -m
+	sw = switch
+	swc = switch -c
+	st = status
+	dc = diff --cached
+	co = checkout
+	br = branch
+	unc = reset --soft HEAD~1
+	amend = commit --amend --no-edit
+    birth = "log --diff-filter=A --"
+[push]
+	autoSetupRemote = true
+[diff]
+	tool = nvimdiff
+[difftool "nvimdiff"]
+	cmd = nvim -d \"$LOCAL\" \"$REMOTE\"

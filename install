@@ -18,6 +18,10 @@ ln -s $DOTFILES/nvim $HOME/.config/nvim
 rm -f $HOME/.zshrc
 ln -s $DOTFILES/zsh/zshrc $HOME/.zshrc
 
+# Git
+rm -f $HOME/.gitconfig
+ln -s $DOTFILES/git/gitconfig $HOME/.gitconfig
+
 # Scripts
 mkdir -p $HOME/.local/bin
 ln -sf $DOTFILES/local/bin/t $HOME/.local/bin/t
