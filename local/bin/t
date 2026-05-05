@@ -2,11 +2,45 @@
 
 # Credit to ThePrimeagen
 
+REPO=/Users/alem/Code/amonorepo.git
+BASE_BRANCH=dev
+
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    items=`find ~/Code -maxdepth 3 -mindepth 1 -type d`
-    selected=`echo "$items" | fzf`
+    items=$(find ~/Code -maxdepth 3 -mindepth 1 -type d)
+    out=$(echo "$items" | fzf --print-query --expect=ctrl-n \
+        --header='enter: open  ·  ctrl-n: new worktree from typed branch')
+    query=$(sed -n '1p' <<<"$out")
+    key=$(sed -n '2p' <<<"$out")
+    selected=$(sed -n '3p' <<<"$out")
+
+    if [[ "$key" == "ctrl-n" && -n "$query" ]]; then
+        branch="$query"
+        sanitized="${branch//\//-}"
+        path="$REPO/$sanitized"
+
+        echo "fetching origin..."
+        git -C "$REPO" fetch --quiet origin || echo "fetch failed, continuing with local refs"
+
+        if git -C "$REPO" show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+            git -C "$REPO" worktree add --track -B "$branch" "$path" "origin/$branch"
+        elif git -C "$REPO" show-ref --verify --quiet "refs/heads/$branch"; then
+            git -C "$REPO" worktree add "$path" "$branch"
+        else
+            git -C "$REPO" worktree add -b "$branch" "$path" "origin/$BASE_BRANCH"
+        fi
+
+        if [[ $? -ne 0 ]]; then
+            read -n 1 -s -r -p "worktree creation failed — press any key to dismiss"
+            exit 1
+        fi
+        # Kick off env-symlink + install + build + codegen in the background;
+        # the tmux session opens immediately. Tail /tmp/amondo-wt-setup.log for progress.
+        nohup amondo-wt-setup "$path" >> /tmp/amondo-wt-setup.log 2>&1 &
+        disown
+        selected="$path"
+    fi
 fi
 
 if [[ $selected == '' ]]; then
@@ -20,5 +54,9 @@ if [[ $? -eq 0 ]]; then
     exit 0
 fi
 
-tmux new-session -c "$selected" -d -s "$dirname" && tmux switch-client -t "$dirname" || tmux new -c "$selected" -A -s "$dirname"
-
+if tmux new-session -c "$selected" -d -s "$dirname" && tmux switch-client -t "$dirname"; then
+    tmux resize-pane -t "$dirname:1.3" -x 30%
+    tmux resize-pane -t "$dirname:1.2" -y 25%
+else
+    tmux new -c "$selected" -A -s "$dirname"
+fi

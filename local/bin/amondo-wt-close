@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# Cleanly close an amonorepo worktree: kill its tmux session, remove the worktree,
+# delete the local branch, prune remote tracking refs.
+# Usage: amondo-wt-close [-f|--force] [<name>]   (name defaults to basename of pwd)
+
+set -euo pipefail
+
+bareRepo="$HOME/Code/amonorepo.git"
+devWorktree="$bareRepo/dev"
+
+force=0
+name=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -f|--force) force=1 ;;
+    -h|--help)
+      echo "usage: amondo-wt-close [-f|--force] [<name>]"
+      exit 0
+      ;;
+    -*)
+      echo "amondo-wt-close: unknown flag: $1" >&2
+      exit 1
+      ;;
+    *) name="$1" ;;
+  esac
+  shift
+done
+
+if [[ -z "$name" || "$name" == "." ]]; then
+  name="$(basename "$PWD")"
+fi
+
+if [[ "$name" == "dev" || "$name" == "main" ]]; then
+  echo "amondo-wt-close: refusing to close $name" >&2
+  exit 1
+fi
+
+target="$bareRepo/$name"
+
+if [[ ! -d "$target" ]]; then
+  echo "amondo-wt-close: $target does not exist" >&2
+  exit 1
+fi
+if [[ ! -e "$devWorktree/.git" ]]; then
+  echo "amondo-wt-close: $devWorktree is not a git worktree (is the amonorepo.git bare repo present?)" >&2
+  exit 1
+fi
+
+if [[ $force -eq 0 && -n "$(git -C "$target" status --porcelain)" ]]; then
+  echo "amondo-wt-close: $name has uncommitted or untracked changes; rerun with --force to discard" >&2
+  exit 1
+fi
+
+# Match the tmux session-name sanitization that `t` applies (dots → underscores).
+session="${name//./_}"
+
+if [[ -n "${TMUX:-}" ]]; then
+  current="$(tmux display-message -p '#{session_name}')"
+  if [[ "$current" == "$session" ]]; then
+    echo "amondo-wt-close: you're attached to tmux session '$session'. Switch away first (e.g. 'tmux switch -t dev')." >&2
+    exit 1
+  fi
+fi
+
+# Worktree remove fails if cwd is inside the target — step out first.
+case "$PWD" in
+  "$target"|"$target"/*) cd "$devWorktree" ;;
+esac
+
+if tmux has-session -t "=$session" 2>/dev/null; then
+  tmux kill-session -t "$session"
+fi
+
+if [[ $force -eq 1 ]]; then
+  git -C "$devWorktree" worktree remove --force "$target"
+else
+  git -C "$devWorktree" worktree remove "$target"
+fi
+git -C "$devWorktree" branch -D "$name" 2>/dev/null || true
+git -C "$devWorktree" fetch --prune
+echo "amondo-wt-close: removed $name"

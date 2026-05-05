@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Set up an amonorepo worktree: symlink shared env files, install deps, run codegen.
+# Usage: amondo-wt-setup <worktree-path>
+
+set -euo pipefail
+
+target="${1:-}"
+if [[ -z "$target" ]]; then
+  echo "usage: amondo-wt-setup <worktree-path>" >&2
+  exit 1
+fi
+if [[ ! -d "$target" ]]; then
+  echo "amondo-wt-setup: $target does not exist" >&2
+  exit 1
+fi
+
+devWorktree="$HOME/Code/amonorepo.git/dev"
+if [[ ! -e "$devWorktree/.git" ]]; then
+  echo "amondo-wt-setup: $devWorktree is not a git worktree (is the amonorepo.git bare repo present?)" >&2
+  exit 1
+fi
+
+cd "$target"
+ln -sf "$devWorktree/apps/api/database/.env.docker" apps/api/database/.env.docker
+ln -sf "$devWorktree/apps/api/.env"                 apps/api/.env
+ln -sf "$devWorktree/apps/dash/.env.development"    apps/dash/.env.development
+pnpm install
+pnpm build
+pnpm --filter @amondo/graphql gqlcodegen \
+  && pnpm --filter api gqlcodegen \
+  && pnpm gqlcodegen:clients
