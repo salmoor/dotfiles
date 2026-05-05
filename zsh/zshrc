@@ -59,3 +59,11 @@ tt() {
 }
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
+
+if [[ "$OSTYPE" == "darwin"* ]] && command -v brew >/dev/null 2>&1; then
+  brewser=$(stat -f "%Su" "$(which brew)")
+  if [[ "$brewser" != "$(whoami)" ]]; then
+    alias brew="sudo -Hu $brewser brew"
+  fi
+  unset brewser
+fi
