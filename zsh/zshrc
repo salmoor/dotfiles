@@ -52,6 +52,9 @@ alias e='eza'
 alias docker-compose="docker compose"
 alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
 alias phpstan='./vendor/bin/phpstan analyse --memory-limit=2G'
+alias sz="source ~/.zshrc"
+alias sp="pbpaste > /Users/Shared/clipboard/shared.txt && echo \"Shared paste!\""
+alias sc="pbcopy < /Users/Shared/clipboard/shared.txt && echo \"Shared copy!\""
 
 # Functions
 tt() {
