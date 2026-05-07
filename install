@@ -22,6 +22,10 @@ ln -s $DOTFILES/zsh/zshrc $HOME/.zshrc
 rm -f $HOME/.gitconfig
 ln -s $DOTFILES/git/gitconfig $HOME/.gitconfig
 
+# AeroSpace
+rm -rf $HOME/.config/aerospace
+ln -s $DOTFILES/aerospace $HOME/.config/aerospace
+
 # Scripts
 mkdir -p $HOME/.local/bin
 ln -sf $DOTFILES/local/bin/t $HOME/.local/bin/t
