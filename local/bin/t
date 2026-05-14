@@ -2,7 +2,7 @@
 
 # Credit to ThePrimeagen
 
-REPO=/Users/alem/Code/amonorepo.git
+REPO="$HOME/Code/amonorepo.git"
 BASE_BRANCH=dev
 
 if [[ $# -eq 1 ]]; then

@@ -24,6 +24,7 @@ cd "$target"
 ln -sf "$devWorktree/apps/api/database/.env.docker" apps/api/database/.env.docker
 ln -sf "$devWorktree/apps/api/.env"                 apps/api/.env
 ln -sf "$devWorktree/apps/dash/.env.development"    apps/dash/.env.development
+ln -sf "$devWorktree/apps/bdd-tests/.env"    apps/bdd-tests/.env
 pnpm install
 pnpm build
 pnpm --filter @amondo/graphql gqlcodegen \

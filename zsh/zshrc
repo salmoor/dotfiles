@@ -1,3 +1,8 @@
+# Homebrew zsh-completions (must come before oh-my-zsh)
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+fi
+
 # Oh My Zsh
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
@@ -8,13 +13,6 @@ source $ZSH/oh-my-zsh.sh
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:$PATH"
 export PATH="/opt/homebrew/opt/sqlite/bin:/opt/homebrew/opt/libpq/bin:$PATH"
 export XDG_DATA_DIRS="/opt/homebrew/share:$XDG_DATA_DIRS"
-
-# Homebrew zsh-completions
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-  autoload -Uz compinit
-  compinit
-fi
 
 # nvm
 export NVM_DIR="$HOME/.nvm"
@@ -63,8 +61,9 @@ tt() {
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
-if [[ "$OSTYPE" == "darwin"* ]] && command -v brew >/dev/null 2>&1; then
-  brewser=$(stat -f "%Su" "$(which brew)")
+if [[ "$OSTYPE" == "darwin"* ]] && (( ${+commands[brew]} )); then
+  unalias brew 2>/dev/null
+  brewser=$(stat -f "%Su" "${commands[brew]}")
   if [[ "$brewser" != "$(whoami)" ]]; then
     alias brew="sudo -Hu $brewser brew"
   fi

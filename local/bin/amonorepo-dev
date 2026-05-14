@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Open a tmux window with 6 tiled panes, each running one amonorepo dev service.
+# Run from inside an amonorepo worktree, or pass the worktree path as $1.
+set -euo pipefail
+
+repo="${1:-$PWD}"
+[[ -f "$repo/turbo.json" ]] || { echo "amonorepo-dev: not an amonorepo worktree: $repo" >&2; exit 1; }
+
+session=$(tmux display-message -p '#S')
+window="dev"
+
+if tmux list-windows -t "$session" -F '#W' | grep -qx "$window"; then
+  tmux select-window -t "$session:$window"
+  exit 0
+fi
+
+tmux new-window -t "$session:" -n "$window" -c "$repo"
+# after-new-window hook auto-splits into 3 panes and sends 'nvim .' / 'claude'.
+# Collapse back to 1 pane and respawn it to drop nvim before we re-split.
+tmux kill-pane -a -t "$session:$window.1"
+tmux respawn-pane -k -t "$session:$window.1" -c "$repo"
+
+for _ in 1 2 3 4 5; do
+  tmux split-window -t "$session:$window" -h -c "$repo"
+done
+tmux select-layout -t "$session:$window" tiled
+
+tmux send-keys -t "$session:$window.1" 'pnpm docker:datasource'         C-m
+tmux send-keys -t "$session:$window.2" 'pnpm dev:api'                   C-m
+tmux send-keys -t "$session:$window.3" 'pnpm --filter dash start:dev'   C-m
+tmux send-keys -t "$session:$window.4" 'pnpm dev:public-api'            C-m
+tmux send-keys -t "$session:$window.5" 'pnpm dev:analytics'             C-m
+tmux send-keys -t "$session:$window.6" 'pnpm --filter websdk start:dev' C-m
